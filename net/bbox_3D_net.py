@@ -18,7 +18,7 @@ def bbox_3D_net(input_shape=(224, 224, 3), vgg_weights=None, freeze_vgg=False, b
         for layer in vgg16_model.layers:
             layer.trainable = False
 
-    x = Flatten()(vgg16_model.output)
+    x = Reshape((25088,))(vgg16_model.output)
 
     dimension = Dense(512)(x)
     dimension = LeakyReLU(alpha=0.1)(dimension)
@@ -31,7 +31,7 @@ def bbox_3D_net(input_shape=(224, 224, 3), vgg_weights=None, freeze_vgg=False, b
     orientation = Dropout(0.5)(orientation)
     orientation = Dense(bin_num * 2)(orientation)
     orientation = LeakyReLU(alpha=0.1)(orientation)
-    orientation = Reshape((bin_num, -1))(orientation)
+    orientation = Reshape((bin_num, 2))(orientation)
     orientation = Lambda(l2_normalize, name='orientation')(orientation)
 
     confidence = Dense(256)(x)
